@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "QR Manufacturing Tracking - Anveshan Farm",
   description: "Verify product authenticity and view manufacturing details for Anveshan Farm products",
+  icons: {
+    icon: "/favicon.jpg",
+    apple: "/favicon.jpg",
+  },
 };
 
 export default function RootLayout({
