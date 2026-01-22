@@ -21,9 +21,16 @@ function addSecurityHeaders(response: NextResponse) {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check if request is from localhost
+  // Check if request is from localhost or allowed IPs
   const host = request.headers.get('host') || '';
   const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
+
+  // Allowed IPs for admin access
+  const allowedIPs = ['223.190.82.17', '2401:4900:1c69:5754:5934:a1f0:d3a4:6549'];
+  const clientIP = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+                   request.headers.get('x-real-ip') ||
+                   '';
+  const isAllowedIP = allowedIPs.some(ip => clientIP.includes(ip));
 
   // Block access-denied page on localhost (it's only for production)
   if (pathname === '/access-denied' && isLocalhost) {
@@ -44,16 +51,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/access-denied', request.url));
   }
 
-  // Protect admin page - only allow on localhost
+  // Protect admin page - only allow on localhost or allowed IPs
   if (pathname.startsWith('/admin')) {
-    if (!isLocalhost) {
+    if (!isLocalhost && !isAllowedIP) {
       return NextResponse.redirect(new URL('/access-denied', request.url));
     }
   }
 
-  // Protect home page - only allow on localhost
+  // Protect home page - only allow on localhost or allowed IPs
   if (pathname === '/') {
-    if (!isLocalhost) {
+    if (!isLocalhost && !isAllowedIP) {
       return NextResponse.redirect(new URL('/access-denied', request.url));
     }
   }
