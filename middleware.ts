@@ -32,6 +32,15 @@ export function middleware(request: NextRequest) {
                    '';
   const isAllowedIP = allowedIPs.some(ip => clientIP.includes(ip));
 
+  // Debug: Log IP info
+  console.log('=== IP DEBUG ===');
+  console.log('Path:', pathname);
+  console.log('Client IP:', clientIP);
+  console.log('X-Forwarded-For:', request.headers.get('x-forwarded-for'));
+  console.log('X-Real-IP:', request.headers.get('x-real-ip'));
+  console.log('Is Allowed:', isAllowedIP);
+  console.log('================');
+
   // Block access-denied page on localhost (it's only for production)
   if (pathname === '/access-denied' && isLocalhost) {
     return NextResponse.redirect(new URL('/', request.url));
