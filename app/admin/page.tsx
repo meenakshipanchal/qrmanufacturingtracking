@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import ProductForm from '@/components/ProductForm';
 import ProductList from '@/components/ProductList';
-import { Product, getAllProducts } from '@/lib/firebase';
+import { Product, getAllProducts, saveProduct } from '@/lib/firebase';
 
 // Password for admin access - change this to your desired password
 const ADMIN_PASSWORD = 'anveshan@admin2024';
@@ -67,6 +67,31 @@ export default function AdminPage() {
   const handleEdit = (product: Product) => {
     setEditProduct(product);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const [importing, setImporting] = useState<{ done: number; total: number } | null>(null);
+  const handleImportFromExcel = async () => {
+    if (!confirm('Import 32 products from Manufacturing Details Excel? This will overwrite any matching handles in Firestore.')) return;
+    try {
+      const res = await fetch('/api/parse-import');
+      if (!res.ok) throw new Error(`Parse failed: ${res.status}`);
+      const { products: parsed } = (await res.json()) as { products: Product[] };
+
+      setImporting({ done: 0, total: parsed.length });
+      const now = new Date().toISOString();
+      for (let i = 0; i < parsed.length; i++) {
+        const p = parsed[i];
+        await saveProduct({ ...p, createdAt: now, updatedAt: now });
+        setImporting({ done: i + 1, total: parsed.length });
+      }
+      setImporting(null);
+      alert(`Imported ${parsed.length} products successfully.`);
+      fetchProducts();
+    } catch (err) {
+      setImporting(null);
+      console.error(err);
+      alert(`Import failed: ${(err as Error).message}`);
+    }
   };
 
   // Login Screen
@@ -183,9 +208,18 @@ export default function AdminPage() {
             <h2 className="text-xl font-bold text-gray-800">
               All Products
             </h2>
-            <span className="px-3 py-1 bg-[#235a49]/10 text-[#235a49] font-semibold rounded-full text-sm">
-              {products.length} {products.length === 1 ? 'product' : 'products'}
-            </span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleImportFromExcel}
+                disabled={importing !== null}
+                className="px-4 py-2 bg-[#235a49] text-white font-medium rounded-lg hover:bg-[#1a4438] disabled:bg-gray-400 transition-colors text-sm"
+              >
+                {importing ? `Importing ${importing.done}/${importing.total}…` : 'Import from Excel'}
+              </button>
+              <span className="px-3 py-1 bg-[#235a49]/10 text-[#235a49] font-semibold rounded-full text-sm">
+                {products.length} {products.length === 1 ? 'product' : 'products'}
+              </span>
+            </div>
           </div>
           {loading ? (
             <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">

@@ -47,117 +47,88 @@ export default function ProductDisplay({ product }: ProductDisplayProps) {
         </div>
 
         {/* Main Product Card */}
-        <div className={`bg-white/90 backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl border border-white/50 overflow-hidden transition-all duration-500 delay-200 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-          {/* Product Header with gradient */}
-          <div className="bg-gradient-to-br from-[#235a49] via-[#1e4d3f] to-[#163832] text-white px-4 sm:px-6 py-4 sm:py-5 relative overflow-hidden">
-            {/* Animated decorative elements */}
-            <div className="absolute -right-8 -top-8 w-28 h-28 sm:w-32 sm:h-32 bg-white/10 rounded-full blur-xl"></div>
-            <div className="absolute -right-4 top-6 w-20 h-20 sm:w-24 sm:h-24 bg-white/5 rounded-full"></div>
-            <div className="absolute left-1/2 -bottom-10 w-32 h-32 bg-white/5 rounded-full blur-lg"></div>
-
-            <div className="relative">
-              <div className="inline-flex items-center bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full mb-2">
-                <span className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-white/90">
-                  {product.category}
-                </span>
-              </div>
-              <h1 className="text-lg sm:text-xl font-bold leading-tight">{product.productName}</h1>
-            </div>
+        <div className={`bg-white rounded-2xl shadow-md ring-1 ring-gray-200/70 overflow-hidden transition-all duration-500 delay-200 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          {/* Product Header */}
+          <div className="bg-[#235a49] text-white px-5 sm:px-6 py-5 sm:py-6">
+            <span className="inline-block text-[11px] font-medium uppercase tracking-[0.15em] text-white/60 mb-1.5">
+              {product.category}
+            </span>
+            <h1 className="text-xl sm:text-2xl font-semibold leading-tight tracking-tight">{product.productName}</h1>
           </div>
 
-          {/* Verified Badge */}
-          <div className="bg-gradient-to-r from-emerald-50 via-green-50 to-teal-50 border-b border-emerald-100 px-4 sm:px-6 py-2.5 sm:py-3">
-            <div className="flex items-center gap-2">
-              <div className="relative flex-shrink-0">
-                <div className="w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-200">
-                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full animate-ping"></span>
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full"></span>
-              </div>
-              <div>
-                <span className="text-emerald-700 text-xs sm:text-sm font-bold">Verified Authentic</span>
-                <span className="text-emerald-600 text-[10px] sm:text-xs ml-1 font-medium">Product</span>
-              </div>
-            </div>
+          {/* Verified status row */}
+          <div className="flex items-center gap-2 px-5 sm:px-6 py-3 border-b border-gray-100 bg-gray-50/50">
+            <svg className="w-4 h-4 text-emerald-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span className="text-sm text-gray-700 font-medium">Verified Authentic Product</span>
           </div>
 
           {/* Product Details */}
-          <div className="p-4 sm:p-6">
-            <h2 className="text-xs sm:text-sm font-bold text-[#235a49] uppercase tracking-wider mb-3 sm:mb-4 flex items-center gap-2">
-              <span className="w-1 h-4 bg-gradient-to-b from-[#235a49] to-[#3d8b6e] rounded-full"></span>
-              Manufacturing Details
-            </h2>
+          <div className="px-5 sm:px-6 py-5 sm:py-6">
+            {(() => {
+              const roleRows: { label: string; value: string }[] = [];
+              if (product.mfdBy) roleRows.push({ label: 'MFD BY', value: product.mfdBy });
+              if (product.pkdBy) roleRows.push({ label: 'PKD BY', value: product.pkdBy });
+              if (product.importedBy) roleRows.push({ label: 'IMPORTED BY', value: product.importedBy });
+              // Legacy fallback for records that still use the combined field
+              if (roleRows.length === 0 && product.manufacturedBy) {
+                roleRows.push({ label: 'MFD & PKD BY', value: product.manufacturedBy });
+              }
 
-            {/* Modern Card Layout for Mobile */}
-            <div className="space-y-2.5 sm:space-y-3">
-              {/* Product Name Card */}
-              <div className="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-3 sm:p-4 border border-gray-100 hover:shadow-md transition-all duration-300">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2.5 flex-shrink-0">
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 bg-[#235a49]/10 rounded-lg flex items-center justify-center">
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#235a49]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                      </svg>
-                    </div>
-                    <span className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide">Product</span>
-                  </div>
-                  <p className="text-sm sm:text-base text-gray-800 font-semibold text-right flex-1">{product.productName}</p>
-                </div>
-              </div>
+              return (
+                <table className="w-full text-sm">
+                  <tbody>
+                    <tr className="border-b border-gray-100">
+                      <th scope="row" className="w-2/5 py-3 pr-3 text-left align-top text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">
+                        Product
+                      </th>
+                      <td className="py-3 text-gray-900 align-top break-words">{product.productName}</td>
+                    </tr>
 
-              {/* FSSAI License Card */}
-              <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-yellow-50 rounded-xl p-3 sm:p-4 border border-amber-200/50 hover:shadow-md hover:border-amber-300/50 transition-all duration-300">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2.5 flex-shrink-0">
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center shadow-md">
-                      <svg viewBox="0 0 24 24" className="w-5 h-5 sm:w-6 sm:h-6">
-                        <circle cx="12" cy="12" r="10" fill="#1a5f2a" stroke="#fbbf24" strokeWidth="1.5"/>
-                        <text x="12" y="10" textAnchor="middle" fill="white" fontSize="4" fontWeight="bold">FSSAI</text>
-                        <text x="12" y="14" textAnchor="middle" fill="#fbbf24" fontSize="3">License</text>
-                        <path d="M6 16 L12 19 L18 16" stroke="#fbbf24" strokeWidth="1" fill="none"/>
-                      </svg>
-                    </div>
-                    <span className="text-[10px] sm:text-xs font-semibold text-amber-700 uppercase tracking-wide">FSSAI License</span>
-                  </div>
-                  <p className="text-sm sm:text-base text-gray-800 font-bold text-right flex-1 tracking-wide">{product.fssaiLicense}</p>
-                </div>
-              </div>
+                    <tr className="border-b border-gray-100">
+                      <th scope="row" className="w-2/5 py-3 pr-3 text-left align-top">
+                        <div className="flex items-center gap-2">
+                          <Image
+                            src="/fssai-logo.png"
+                            alt="FSSAI"
+                            width={48}
+                            height={24}
+                            className="h-5 w-auto object-contain flex-shrink-0"
+                          />
+                          <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">License</span>
+                        </div>
+                      </th>
+                      <td className="py-3 text-gray-900 font-mono tracking-wide align-top break-all">{product.fssaiLicense}</td>
+                    </tr>
 
-              {/* Manufactured By Card */}
-              <div className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl p-3 sm:p-4 border border-gray-100 hover:shadow-md transition-all duration-300">
-                <div className="flex items-start gap-2.5">
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 bg-[#235a49]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#235a49]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <span className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">MFD & PKD By</span>
-                    <p className="text-xs sm:text-sm text-gray-700 leading-relaxed whitespace-pre-line">{product.manufacturedBy}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+                    {roleRows.map((row, idx) => (
+                      <tr key={row.label} className={idx < roleRows.length - 1 ? 'border-b border-gray-100' : ''}>
+                        <th scope="row" className="w-2/5 py-3 pr-3 text-left align-top text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">
+                          {row.label}
+                        </th>
+                        <td className="py-3 text-gray-900 align-top whitespace-pre-line break-words leading-relaxed">{row.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              );
+            })()}
           </div>
 
           {/* Footer inside card */}
-          <div className="bg-gradient-to-r from-[#235a49] to-[#1a4538] px-4 sm:px-6 py-3 sm:py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-white/80">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                </svg>
-                <span className="text-[10px] sm:text-xs font-medium">QR Verified</span>
-              </div>
-              <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                <svg className="w-3.5 h-3.5 text-emerald-300" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span className="text-[10px] sm:text-xs font-semibold text-white">Secured</span>
-              </div>
+          <div className="px-5 sm:px-6 py-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+            <div className="flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+              </svg>
+              <span>QR Verified</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>Secured</span>
             </div>
           </div>
         </div>

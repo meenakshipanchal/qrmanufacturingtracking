@@ -11,14 +11,17 @@ interface ProductFormProps {
 
 export default function ProductForm({ editProduct, onSave, onCancel }: ProductFormProps) {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const emptyForm = {
     handle: '',
     category: '',
     productName: '',
     variant: '',
-    manufacturedBy: '',
+    mfdBy: '',
+    pkdBy: '',
+    importedBy: '',
     fssaiLicense: '',
-  });
+  };
+  const [formData, setFormData] = useState(emptyForm);
 
   useEffect(() => {
     if (editProduct) {
@@ -27,7 +30,9 @@ export default function ProductForm({ editProduct, onSave, onCancel }: ProductFo
         category: editProduct.category,
         productName: editProduct.productName,
         variant: editProduct.variant,
-        manufacturedBy: editProduct.manufacturedBy,
+        mfdBy: editProduct.mfdBy ?? editProduct.manufacturedBy ?? '',
+        pkdBy: editProduct.pkdBy ?? '',
+        importedBy: editProduct.importedBy ?? '',
         fssaiLicense: editProduct.fssaiLicense,
       });
     }
@@ -39,23 +44,20 @@ export default function ProductForm({ editProduct, onSave, onCancel }: ProductFo
 
     try {
       const product: Product = {
-        ...formData,
+        handle: formData.handle,
+        category: formData.category,
+        productName: formData.productName,
+        variant: formData.variant,
+        mfdBy: formData.mfdBy.trim() || undefined,
+        pkdBy: formData.pkdBy.trim() || undefined,
+        importedBy: formData.importedBy.trim() || undefined,
+        fssaiLicense: formData.fssaiLicense,
         createdAt: editProduct?.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
       await saveProduct(product);
-
-      // Reset form
-      setFormData({
-        handle: '',
-        category: '',
-        productName: '',
-        variant: '',
-        manufacturedBy: '',
-        fssaiLicense: '',
-      });
-
+      setFormData(emptyForm);
       onSave();
     } catch (error) {
       console.error('Error saving product:', error);
@@ -118,12 +120,11 @@ export default function ProductForm({ editProduct, onSave, onCancel }: ProductFo
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Variant *
+            Variant
           </label>
           <input
             type="text"
-            required
-            placeholder="e.g., 1Kg, 500g"
+            placeholder="e.g., 1Kg, 500g (optional)"
             value={formData.variant}
             onChange={(e) => setFormData({ ...formData, variant: e.target.value })}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#235a49] focus:border-transparent transition-all"
@@ -132,19 +133,44 @@ export default function ProductForm({ editProduct, onSave, onCancel }: ProductFo
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Manufactured By (MFD and PKD) *
+            MFD BY
           </label>
           <textarea
-            required
-            rows={4}
-            placeholder="e.g., V S Natural Agro Foods,&#10;Bhandure Industrial Estate,&#10;Bajrang Nagar, Satpur, Nashik&#10;Maharashtra-422007"
-            value={formData.manufacturedBy}
-            onChange={(e) => setFormData({ ...formData, manufacturedBy: e.target.value })}
+            rows={3}
+            placeholder="Manufacturer name &amp; address (leave blank if not applicable)"
+            value={formData.mfdBy}
+            onChange={(e) => setFormData({ ...formData, mfdBy: e.target.value })}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#235a49] focus:border-transparent transition-all resize-none"
           />
         </div>
 
-        <div>
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            PKD BY
+          </label>
+          <textarea
+            rows={3}
+            placeholder="Packer name &amp; address (leave blank if same as MFD)"
+            value={formData.pkdBy}
+            onChange={(e) => setFormData({ ...formData, pkdBy: e.target.value })}
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#235a49] focus:border-transparent transition-all resize-none"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            IMPORTED BY
+          </label>
+          <textarea
+            rows={3}
+            placeholder="Importer name &amp; address (only for imported products)"
+            value={formData.importedBy}
+            onChange={(e) => setFormData({ ...formData, importedBy: e.target.value })}
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#235a49] focus:border-transparent transition-all resize-none"
+          />
+        </div>
+
+        <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             FSSAI License Number *
           </label>

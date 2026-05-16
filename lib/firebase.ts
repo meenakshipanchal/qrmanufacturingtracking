@@ -20,7 +20,12 @@ export interface Product {
   category: string;
   productName: string;
   variant: string;
-  manufacturedBy: string;
+  mfdBy?: string;
+  pkdBy?: string;
+  importedBy?: string;
+  // Legacy combined field — kept for backward compatibility with older records.
+  // Prefer mfdBy / pkdBy / importedBy on new data.
+  manufacturedBy?: string;
   fssaiLicense: string;
   createdAt: string;
   updatedAt: string;
