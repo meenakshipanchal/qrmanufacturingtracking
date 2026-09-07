@@ -99,7 +99,7 @@ export default function ProductDisplay({ product }: ProductDisplayProps) {
                           <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">License</span>
                         </div>
                       </th>
-                      <td className="py-3 text-gray-900 font-mono tracking-wide align-top break-all">{product.fssaiLicense}</td>
+<td className="py-3 text-gray-900 font-mono tracking-wide align-top break-all whitespace-pre-line">{product.fssaiLicense}</td>
                     </tr>
 
                     {roleRows.map((row, idx) => (
