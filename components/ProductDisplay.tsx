@@ -8,6 +8,20 @@ interface ProductDisplayProps {
   product: Product;
 }
 
+// "(A) 111... (B) 222..." jaisi multi-licence value ko alag lines me todta hai.
+// Admin form ka License field single-line <input> hai, isliye newline pe bharosa
+// nahi kar sakte — "(A)" / "(B)" markers pe split karte hain. Purane "a." / "1."
+// wale records bhi chalte rahein isliye woh bhi support hain. Marker se pehle
+// space zaroori hai, warna "No. 123" jaise text galat jagah tut jaata.
+function licenseLines(value: string): string[] {
+  const trimmed = (value ?? '').trim();
+  const parts = trimmed
+    .split(/\s+(?=\([A-Za-z0-9]{1,2}\)|(?:[a-zA-Z]|\d{1,2})\.\s)/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  return parts.length > 1 ? parts : [trimmed];
+}
+
 export default function ProductDisplay({ product }: ProductDisplayProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -99,7 +113,11 @@ export default function ProductDisplay({ product }: ProductDisplayProps) {
                           <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">License</span>
                         </div>
                       </th>
-                      <td className="py-3 text-gray-900 font-mono tracking-wide align-top break-all">{product.fssaiLicense}</td>
+                      <td className="py-3 text-gray-900 font-mono tracking-wide align-top break-all leading-relaxed">
+                        {licenseLines(product.fssaiLicense).map((line, i) => (
+                          <div key={i}>{line}</div>
+                        ))}
+                      </td>
                     </tr>
 
                     {roleRows.map((row, idx) => (

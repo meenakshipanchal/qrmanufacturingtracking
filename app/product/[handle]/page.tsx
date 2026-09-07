@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${product.productName} - Anveshan Farm`,
-    description: `Manufacturing details for ${product.productName}. FSSAI: ${product.fssaiLicense}`,
+    description: `Manufacturing details for ${product.productName}. FSSAI: ${product.fssaiLicense.replace(/\s+/g, " ")}`,
   };
 }
 

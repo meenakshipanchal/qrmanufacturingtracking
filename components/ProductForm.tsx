@@ -61,7 +61,7 @@ export default function ProductForm({ editProduct, onSave, onCancel }: ProductFo
       onSave();
     } catch (error) {
       console.error('Error saving product:', error);
-      alert('Error saving product. Please try again.');
+      alert(`Error saving product: ${(error as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -177,7 +177,7 @@ export default function ProductForm({ editProduct, onSave, onCancel }: ProductFo
           <input
             type="text"
             required
-            placeholder="e.g., 11522027000428"
+            placeholder="e.g., 11522027000428 — multiple manufacturers: (A) 11522027000428 (B) 10012013000112"
             value={formData.fssaiLicense}
             onChange={(e) => setFormData({ ...formData, fssaiLicense: e.target.value })}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#235a49] focus:border-transparent transition-all"
