@@ -22,6 +22,43 @@ function licenseLines(value: string): string[] {
   return parts.length > 1 ? parts : [trimmed];
 }
 
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+// Licence number do jagah rehta hai: License field me, aur vendor ke address text
+// ke andar bhi. Pehle sirf License field render hoti thi, isliye jab kisi product
+// pe naya vendor add hota tha (jaise groundnut-oil ke PKD me teen vendors) aur
+// License field update karna reh jaata tha, to wo number page pe kahin nahi aata.
+// Ab dono jagah se numbers uthakar merge karte hain — naye products me ye apne aap
+// ho jayega, kisi ko manually yaad rakhne ki zarurat nahi.
+//
+// Order: License field pehle (wahan ka (A)/(B) order deliberate hai), phir address
+// text se jo bache. Dedupe isliye ki ek hi vendor MFD aur PKD dono me ho sakta hai.
+function collectLicenses(product: Product): string[] {
+  // 10+ digits = licence number. FSSAI 14 digits ka hota hai; chhote/galat numbers
+  // bhi pakad lete hain taaki wo chupke se gayab na ho jaayein.
+  const pick = (text: string | undefined) => String(text ?? '').match(/\d{10,}/g) ?? [];
+
+  const numbers: string[] = [];
+  for (const source of [
+    product.fssaiLicense,
+    product.mfdBy,
+    product.pkdBy,
+    product.importedBy,
+    product.manufacturedBy,
+  ]) {
+    for (const n of pick(source)) {
+      if (!numbers.includes(n)) numbers.push(n);
+    }
+  }
+
+  // Koi number mila hi nahi — matlab licence numeric hai hi nahi (jaise Amlaprash
+  // ka Ayurvedic "RJ 846 -AYU"). Aise me value jaisi hai waisi hi dikhao.
+  if (numbers.length === 0) return licenseLines(product.fssaiLicense);
+  if (numbers.length === 1) return [numbers[0]];
+
+  return numbers.map((n, i) => `(${LETTERS[i] ?? i + 1}) ${n}`);
+}
+
 export default function ProductDisplay({ product }: ProductDisplayProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -114,7 +151,7 @@ export default function ProductDisplay({ product }: ProductDisplayProps) {
                         </div>
                       </th>
                       <td className="py-3 text-gray-900 font-mono tracking-wide align-top break-all leading-relaxed">
-                        {licenseLines(product.fssaiLicense).map((line, i) => (
+                        {collectLicenses(product).map((line, i) => (
                           <div key={i}>{line}</div>
                         ))}
                       </td>
