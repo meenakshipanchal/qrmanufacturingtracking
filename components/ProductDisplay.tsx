@@ -150,7 +150,7 @@ export default function ProductDisplay({ product }: ProductDisplayProps) {
                           <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">License</span>
                         </div>
                       </th>
-                      <td className="py-3 text-gray-900 font-mono tracking-wide align-top break-all leading-relaxed">
+                      <td className="py-3 text-gray-900 font-mono tracking-wide align-top break-words leading-relaxed">
                         {collectLicenses(product).map((line, i) => (
                           <div key={i}>{line}</div>
                         ))}
